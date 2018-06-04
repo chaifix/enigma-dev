@@ -30,7 +30,6 @@
 
 // NOTE: Changes/fixes that applies to this likely also applies to the OpenGL3 version.
 namespace enigma {
-  GLuint msaa_fbo = 0;
   GLXContext glxc;
   XVisualInfo *vi;
 
