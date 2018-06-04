@@ -15,23 +15,23 @@
 *** with this code. If not, see <http://www.gnu.org/licenses/>
 **/
 
-#include <string>
+#include "libEGMstd.h"
+#include "Widget_Systems/widgets_mandatory.h"
+#include "Platforms/Win32/WINDOWSmain.h"
+#include "Platforms/platforms_mandatory.h"
+#include "Platforms/General/PFwindow.h"
+#include "Graphics_Systems/Direct3D9/DX9SurfaceStruct.h"
+#include "Graphics_Systems/graphics_mandatory.h"
+#include "Graphics_Systems/General/GScolors.h"
+#include "Bridges/General/DX9Context.h"
+
 #include <windows.h>
 #include <windowsx.h>
 #include <d3d9.h>
 #include <dxerr9.h>
-using namespace std;
+#include <string>
 
-#include "libEGMstd.h"
-#include "Widget_Systems/widgets_mandatory.h"
-#include "Platforms/Win32/WINDOWSmain.h"
-#include "Platforms/General/PFwindow.h"
-#include "Platforms/platforms_mandatory.h"
-#include "Universal_System/roomsystem.h"
-#include "Graphics_Systems/graphics_mandatory.h"
-#include "Graphics_Systems/Direct3D9/DX9SurfaceStruct.h"
-#include "Bridges/General/DX9Context.h"
-#include "Graphics_Systems/General/GScolors.h"
+using namespace std;
 
 // global declarations
 LPDIRECT3D9 d3dobj; // the pointer to our Direct3D interface
@@ -137,9 +137,11 @@ namespace enigma
     d3dmgr->Release(); // close and release the 3D device
     d3dobj->Release(); // close and release Direct3D
   }
-}
 
-#include "Universal_System/roomsystem.h"
+  void graphics_swap_buffers() {
+    d3dmgr->Present(NULL, NULL, NULL, NULL);
+  }
+}
 
 namespace enigma_user
 {
@@ -167,12 +169,6 @@ void display_reset(int samples, bool vsync) {
   enigma::OnDeviceLost();
   d3dmgr->Reset(&d3dpp);
   enigma::OnDeviceReset();
-}
-
-void screen_refresh() {
-  window_set_caption(room_caption);
-  enigma::update_mouse_variables();
-  d3dmgr->Present(NULL, NULL, NULL, NULL);
 }
 
 void set_synchronization(bool enable)
