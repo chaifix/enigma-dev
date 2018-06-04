@@ -48,20 +48,20 @@ ContextManager* d3dmgr;    // the pointer to the device class
 
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-	
+
 namespace enigma
 {
-	
+
   extern void (*WindowResizedCallback)();
   void WindowResized() {
     // clear the window color, viewport does not need set because backbuffer was just recreated
     enigma_user::draw_clear(enigma_user::window_get_color());
   }
-  
+
   void EnableDrawing(void* handle) {
     HGLRC *hRC = static_cast<HGLRC*>(handle);
     WindowResizedCallback = &WindowResized;
-  
+
     d3dmgr = new ContextManager();
       int screenWidth = window_get_width(),
           screenHeight = window_get_height();
@@ -70,7 +70,7 @@ namespace enigma
     bool vsync = false;
     HWND hwnd = enigma::hWnd;
     bool fullscreen = false;
-    
+
     HRESULT result;
     IDXGIFactory* factory;
     IDXGIAdapter* adapter;
@@ -241,7 +241,7 @@ namespace enigma
     featureLevel = D3D_FEATURE_LEVEL_11_0;
 
     // Create the swap chain, Direct3D device, and Direct3D device context.
-    result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1, 
+    result = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1,
                    D3D11_SDK_VERSION, &swapChainDesc, &m_swapChain, &m_device, NULL, &m_deviceContext);
 
     if(FAILED(result))
@@ -363,7 +363,7 @@ namespace enigma
 
     // Now set the rasterizer state.
     m_deviceContext->RSSetState(m_rasterState);
-      
+
     // Setup the viewport for rendering.
     viewport.Width = (float)screenWidth;
     viewport.Height = (float)screenHeight;
@@ -382,10 +382,8 @@ namespace enigma
 
 #include "Universal_System/roomsystem.h"
 
-namespace enigma_user 
+namespace enigma_user
 {
-  int display_aa = 0;
-
   void display_reset(int samples, bool vsync) {
 
   }
@@ -399,6 +397,6 @@ namespace enigma_user
   void set_synchronization(bool enable) //TODO: Needs to be rewritten
   {
 
-  }  
+  }
 
 }

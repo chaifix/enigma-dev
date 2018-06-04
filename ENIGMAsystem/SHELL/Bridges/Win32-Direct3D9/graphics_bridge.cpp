@@ -143,7 +143,6 @@ namespace enigma
 
 namespace enigma_user
 {
-int display_aa = 0;
 
 void display_reset(int samples, bool vsync) {
   if (d3dmgr == NULL) { return; }

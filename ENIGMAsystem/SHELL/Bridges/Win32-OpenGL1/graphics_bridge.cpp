@@ -25,6 +25,13 @@
 **                                                                              **
 \********************************************************************************/
 
+#include "libEGMstd.h"
+#include "Widget_Systems/widgets_mandatory.h"
+#include "Platforms/Win32/WINDOWSmain.h"
+#include "Platforms/General/PFwindow.h"
+#include "Graphics_Systems/General/GScolors.h"
+#include "Universal_System/roomsystem.h"
+
 #include <string>
 #include <windows.h>
 #include <GL/glew.h>
@@ -32,16 +39,8 @@
 
 using namespace std;
 
-#include "libEGMstd.h"
-#include "Widget_Systems/widgets_mandatory.h"
-#include "Platforms/Win32/WINDOWSmain.h"
-#include "Platforms/General/PFwindow.h"
-#include "Graphics_Systems/General/GScolors.h"
-
 namespace enigma
 {
-    GLuint msaa_fbo = 0;
-
     extern void (*WindowResizedCallback)();
     void WindowResized() {
       // clear the window color, viewport does not need set because backbuffer was just recreated
@@ -108,82 +107,34 @@ namespace enigma {
     }
   }
 
+  void graphics_swap_buffers() {
+    SwapBuffers(enigma::window_hDC);
+  }
+
   bool is_ext_swapcontrol_supported() {
     swaphandling::investigate_swapcontrol_support();
     return swaphandling::ext_swapcontrol_supported;
   }
 }
 
-#include "Universal_System/roomsystem.h"
-
 namespace enigma_user {
 
-	int display_aa = 0;
+void set_synchronization(bool enable) {
+  // General notes:
+  // Setting swapping on and off is platform-dependent and requires platform-specific extensions.
+  // Platform-specific extensions are even more bothersome than regular extensions.
+  // What functions and features to use depends on which version of OpenGL is used.
+  // For more information, see the following pages:
+  // http://www.opengl.org/wiki/Load_OpenGL_Functions
+  // http://www.opengl.org/wiki/OpenGL_Loading_Library
+  // http://www.opengl.org/wiki/Swap_Interval
+  // http://en.wikipedia.org/wiki/WGL_%28software%29
+  // Also note that OpenGL version >= 3.0 does not use glGetString for getting extensions.
+  int interval = enable ? 1 : 0;
 
-	void display_reset(int samples, bool vsync) {
-		int interval = vsync ? 1 : 0;
-
-		if (enigma::is_ext_swapcontrol_supported()) {
-		  wglSwapIntervalEXT(interval);
-		}
-
-		GLint fbo;
-		glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &fbo);
-
-		GLuint ColorBufferID, DepthBufferID;
-
-		// Cleanup the multi-sampler fbo if turning off multi-sampling
-		if (samples == 0) {
-			if (enigma::msaa_fbo != 0) {
-				glDeleteFramebuffers(1, &enigma::msaa_fbo);
-				enigma::msaa_fbo = 0;
-			}
-			return;
-		}
-
-		//TODO: Change the code below to fix this to size properly to views
-		// If we don't already have a multi-sample fbo then create one
-		if (enigma::msaa_fbo == 0) {
-			glGenFramebuffersEXT(1, &enigma::msaa_fbo);
-		}
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, enigma::msaa_fbo);
-		// Now make a multi-sample color buffer
-		glGenRenderbuffersEXT(1, &ColorBufferID);
-		glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, ColorBufferID);
-		glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, samples, GL_RGBA8, window_get_region_width(), window_get_region_height());
-		// We also need a depth buffer
-		glGenRenderbuffersEXT(1, &DepthBufferID);
-		glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, DepthBufferID);
-		glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER_EXT, samples, GL_DEPTH_COMPONENT24, window_get_region_width(), window_get_region_height());
-		// Attach the render buffers to the multi-sampler fbo
-		glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, ColorBufferID);
-		glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, DepthBufferID);
-
-	}
-
-  void screen_refresh() {
-    window_set_caption(room_caption);
-    enigma::update_mouse_variables();
-    SwapBuffers(enigma::window_hDC);
+  if (enigma::is_ext_swapcontrol_supported()) {
+    wglSwapIntervalEXT(interval);
   }
+}
 
-  void set_synchronization(bool enable) {
-
-    // General notes:
-    // Setting swapping on and off is platform-dependent and requires platform-specific extensions.
-    // Platform-specific extensions are even more bothersome than regular extensions.
-    // What functions and features to use depends on which version of OpenGL is used.
-    // For more information, see the following pages:
-    // http://www.opengl.org/wiki/Load_OpenGL_Functions
-    // http://www.opengl.org/wiki/OpenGL_Loading_Library
-    // http://www.opengl.org/wiki/Swap_Interval
-    // http://en.wikipedia.org/wiki/WGL_%28software%29
-    // Also note that OpenGL version >= 3.0 does not use glGetString for getting extensions.
-
-      int interval = enable ? 1 : 0;
-
-    if (enigma::is_ext_swapcontrol_supported()) {
-      wglSwapIntervalEXT(interval);
-    }
-  }
 }

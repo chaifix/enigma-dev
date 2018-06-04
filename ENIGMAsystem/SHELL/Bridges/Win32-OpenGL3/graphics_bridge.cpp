@@ -201,7 +201,6 @@ namespace enigma {
 #include "Universal_System/roomsystem.h"
 
 namespace enigma_user {
-	int display_aa = 0;
 
 	void display_reset(int samples, bool vsync) {
 		int interval = vsync ? 1 : 0;
